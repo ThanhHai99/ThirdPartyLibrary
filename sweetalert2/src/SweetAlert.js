@@ -1,8 +1,8 @@
 import { error } from './utils/utils.js'
-import { DismissReason } from './utils/DismissReason'
-import * as staticMethods from './staticMethods'
-import * as instanceMethods from './instanceMethods'
-import privateProps from './privateProps'
+import { DismissReason } from './utils/DismissReason.js'
+import * as staticMethods from './staticMethods.js'
+import * as instanceMethods from './instanceMethods.js'
+import privateProps from './privateProps.js'
 
 let currentInstance
 
@@ -28,7 +28,8 @@ function SweetAlert (...args) {
     params: {
       value: outerParams,
       writable: false,
-      enumerable: true
+      enumerable: true,
+      configurable: true
     }
   })
 
@@ -37,13 +38,9 @@ function SweetAlert (...args) {
 }
 
 // `catch` cannot be the name of a module export, so we define our thenable methods here instead
-SweetAlert.prototype.then = function (onFulfilled, onRejected) {
+SweetAlert.prototype.then = function (onFulfilled) {
   const promise = privateProps.promise.get(this)
-  return promise.then(onFulfilled, onRejected)
-}
-SweetAlert.prototype.catch = function (onRejected) {
-  const promise = privateProps.promise.get(this)
-  return promise.catch(onRejected)
+  return promise.then(onFulfilled)
 }
 SweetAlert.prototype.finally = function (onFinally) {
   const promise = privateProps.promise.get(this)
@@ -67,7 +64,6 @@ Object.keys(instanceMethods).forEach(key => {
 
 SweetAlert.DismissReason = DismissReason
 
-/* istanbul ignore next */
-SweetAlert.noop = () => { }
+SweetAlert.version = '9.10.7'
 
 export default SweetAlert

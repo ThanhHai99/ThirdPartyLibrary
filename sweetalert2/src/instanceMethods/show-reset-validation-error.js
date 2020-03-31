@@ -1,12 +1,11 @@
-import * as dom from '../utils/dom/index'
-import { warnOnce } from '../utils/utils'
-import { swalClasses } from '../utils/classes'
-import privateProps from '../privateProps'
+import * as dom from '../utils/dom/index.js'
+import { swalClasses } from '../utils/classes.js'
+import privateProps from '../privateProps.js'
 
 // Show block with validation message
 export function showValidationMessage (error) {
   const domCache = privateProps.domCache.get(this)
-  domCache.validationMessage.innerHTML = error
+  dom.setInnerHtml(domCache.validationMessage, error)
   const popupComputedStyle = window.getComputedStyle(domCache.popup)
   domCache.validationMessage.style.marginLeft = `-${popupComputedStyle.getPropertyValue('padding-left')}`
   domCache.validationMessage.style.marginRight = `-${popupComputedStyle.getPropertyValue('padding-right')}`
@@ -34,18 +33,4 @@ export function resetValidationMessage () {
     input.removeAttribute('aria-describedBy')
     dom.removeClass(input, swalClasses.inputerror)
   }
-}
-
-// @deprecated
-/* istanbul ignore next */
-export function resetValidationError() {
-  warnOnce(`Swal.resetValidationError() is deprecated and will be removed in the next major release, use Swal.resetValidationMessage() instead`)
-  resetValidationMessage.bind(this)()
-}
-
-// @deprecated
-/* istanbul ignore next */
-export function showValidationError(error) {
-  warnOnce(`Swal.showValidationError() is deprecated and will be removed in the next major release, use Swal.showValidationMessage() instead`)
-  showValidationMessage.bind(this)(error)
 }

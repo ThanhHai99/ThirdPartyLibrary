@@ -1,3 +1,5 @@
+import * as dom from '../utils/dom/index.js'
+
 // private global state for the queue feature
 let currentSteps = []
 
@@ -5,30 +7,29 @@ let currentSteps = []
  * Global function for chaining sweetAlert popups
  */
 export const queue = function (steps) {
-  const swal = this
+  const Swal = this
   currentSteps = steps
-  const resetQueue = () => {
+
+  const resetAndResolve = (resolve, value) => {
     currentSteps = []
-    document.body.removeAttribute('data-swal2-queue-step')
+    resolve(value)
   }
-  let queueResult = []
+
+  const queueResult = []
   return new Promise((resolve) => {
     (function step (i, callback) {
       if (i < currentSteps.length) {
         document.body.setAttribute('data-swal2-queue-step', i)
-
-        swal(currentSteps[i]).then((result) => {
+        Swal.fire(currentSteps[i]).then((result) => {
           if (typeof result.value !== 'undefined') {
             queueResult.push(result.value)
             step(i + 1, callback)
           } else {
-            resetQueue()
-            resolve({ dismiss: result.dismiss })
+            resetAndResolve(resolve, { dismiss: result.dismiss })
           }
         })
       } else {
-        resetQueue()
-        resolve({ value: queueResult })
+        resetAndResolve(resolve, { value: queueResult })
       }
     })(0)
   })
@@ -37,7 +38,7 @@ export const queue = function (steps) {
 /*
  * Global function for getting the index of current popup in queue
  */
-export const getQueueStep = () => document.body.getAttribute('data-swal2-queue-step')
+export const getQueueStep = () => dom.getContainer().getAttribute('data-queue-step')
 
 /*
  * Global function for inserting a popup to the queue

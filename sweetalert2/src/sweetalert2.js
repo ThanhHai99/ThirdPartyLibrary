@@ -1,7 +1,6 @@
-import SweetAlert from './SweetAlert'
-import { withGlobalDefaults, withNoNewKeyword } from './enhancers'
+import SweetAlert from './SweetAlert.js'
 
-const Swal = withNoNewKeyword(withGlobalDefaults(SweetAlert))
+const Swal = SweetAlert
 Swal.default = Swal
 
 export default Swal

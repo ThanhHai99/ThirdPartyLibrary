@@ -1,30 +1,31 @@
 const pify = require('pify')
 const rimraf = require('rimraf')
-const execute = require('../utils/execute')
-const pushBranch = require('./push-branch')
+const execute = require('@sweetalert2/execute')
+const replaceInFile = require('replace-in-file')
 
 const log = console.log // eslint-disable-line
 const removeDir = pify(rimraf)
 
-const version = process.env.VERSION
-
 ;(async () => {
-  log('Switching to the dist branch...')
-  await execute('git checkout -B dist origin/dist')
-
   log('Resetting the branch...')
   await execute('git checkout .')
 
   log('Deleting the current dist folder...')
   await removeDir('dist')
 
+  // the command has been called by semantic-release, bump version in src/SweetAlert.js before building dist
+  if (process.env.VERSION) {
+    log('Updating the version in src/SweetAlert.js...')
+    await replaceInFile({
+      files: 'src/SweetAlert.js',
+      from: /\.version = '.*?'/,
+      to: `.version = '${process.env.VERSION}'`,
+    })
+    await execute('git add src/SweetAlert.js')
+  }
+
   log('Running the build...')
   await execute('yarn build')
-
-  log('Committing the dist dir...')
-  await execute(`git add --force dist/ && git commit -m "chore: add dist for ${version} [skip ci]"`)
-
-  await pushBranch('dist')
 
   log('OK!')
 })().catch(console.error)
